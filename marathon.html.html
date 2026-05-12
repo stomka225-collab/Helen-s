@@ -1,0 +1,595 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Микробиология: Марафон и темы</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+        body {
+            background: #f0f4f8;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        /* карточки */
+        .card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            transition: 0.2s;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #1e3c72, #2b5876);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        h2 {
+            font-size: 1.4rem;
+            margin: 0 0 8px 0;
+            color: #0f172a;
+        }
+        h3 {
+            font-size: 1rem;
+            color: #334155;
+            margin: 0 0 4px 0;
+        }
+        .topic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .topic-btn {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 20px;
+            padding: 16px;
+            text-align: left;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .topic-btn:hover {
+            background: #eef2ff;
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+        }
+        .topic-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+        }
+        .topic-meta {
+            font-size: 0.8rem;
+            color: #475569;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .difficulty {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .easy { background: #dcfce7; color: #15803d; }
+        .medium { background: #fef9c3; color: #854d0e; }
+        .hard { background: #ffe4e6; color: #be123c; }
+        .marathon {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            color: white;
+            border: none;
+        }
+        .marathon .topic-name { color: white; }
+        .marathon .topic-meta { color: #cbd5e1; }
+        /* вопросы */
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+        .option {
+            background: #f1f5f9;
+            border-radius: 16px;
+            padding: 12px 16px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: 0.1s;
+            border: 1px solid #e2e8f0;
+        }
+        .option.selected {
+            background: #dbeafe;
+            border-color: #3b82f6;
+        }
+        .option:hover:not(.disabled) {
+            background: #e6edf5;
+        }
+        .disabled {
+            opacity: 0.6;
+            cursor: default;
+        }
+        button {
+            background: #3b82f6;
+            border: none;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-right: 12px;
+            margin-top: 8px;
+            font-size: 0.9rem;
+        }
+        button.secondary {
+            background: #64748b;
+        }
+        button.outline {
+            background: white;
+            border: 1px solid #3b82f6;
+            color: #3b82f6;
+        }
+        .hint {
+            background: #fef9c3;
+            padding: 10px 14px;
+            border-radius: 16px;
+            margin: 12px 0;
+            font-size: 0.9rem;
+            color: #854d0e;
+        }
+        .explanation {
+            background: #e6f7e6;
+            padding: 10px 14px;
+            border-radius: 16px;
+            margin-top: 12px;
+            font-size: 0.9rem;
+            color: #166534;
+        }
+        .progress {
+            font-size: 0.9rem;
+            color: #334155;
+            margin-top: 16px;
+            margin-bottom: 12px;
+        }
+        .result-table {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        th, td {
+            border: 1px solid #cbd5e1;
+            padding: 10px 8px;
+            vertical-align: top;
+        }
+        th {
+            background: #e2e8f0;
+        }
+        .correct-row {
+            background: #e6f7e6;
+        }
+        .wrong-row {
+            background: #ffe4e6;
+        }
+        .score-badge {
+            font-size: 1.6rem;
+            font-weight: bold;
+        }
+        footer {
+            text-align: center;
+            margin-top: 32px;
+            color: #64748b;
+            font-size: 0.8rem;
+        }
+        @media (max-width: 640px) {
+            .card { padding: 16px; }
+            .question-text { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="app"></div>
+
+<script>
+    // ------------------------------------------------------------------
+    //  БАЗА ДАННЫХ: темы + демо-вопросы (по 2-5 на тему для демонстрации)
+    //  Реальные вопросы будем добавлять позже (каждая тема легко расширяется)
+    // ------------------------------------------------------------------
+    const TOPICS = {
+        staphylococcus: {
+            name: "🟡 Стафилококки",
+            difficulty: "easy",
+            color: "easy",
+            questionCount: 20,
+            questions: [
+                { text: "Как располагаются стафилококки в мазке?", options: ["Цепочками", "Парами", "Гроздьями винограда", "Поодиночке"], correct: 2, hint: "Название от греч. staphyle — виноградная гроздь", explanation: "Стафилококки делятся в разных плоскостях, образуя скопления, похожие на гроздь винограда." },
+                { text: "Какой фермент вырабатывает золотистый стафилококк?", options: ["Коагулаза", "Гиалуронидаза", "ДНК-аза", "Все перечисленные"], correct: 3, hint: "Ключевой маркер патогенности S. aureus", explanation: "Золотистый стафилококк продуцирует плазмокоагулазу, гиалуронидазу, ДНКазу, лецитиназу и др." },
+                { text: "На какой среде стафилококки дают колонии с радужным венчиком?", options: ["Кровяной агар", "Желточно-солевой агар (ЖСА)", "Среда Эндо", "Висмут-сульфит агар"], correct: 1, hint: "Среда с яичным желтком", explanation: "На ЖСА лецитиназа разлагает лецитин, образуя радужный венчик." },
+            ]
+        },
+        streptococcus: {
+            name: "🔵 Стрептококки",
+            difficulty: "easy",
+            color: "easy",
+            questionCount: 20,
+            questions: [
+                { text: "Как стрептококки располагаются в мазке?", options: ["Цепочками", "Гроздьями", "Парами", "Тетрадами"], correct: 0, hint: "Деление в одной плоскости", explanation: "Стрептококки делятся в одной плоскости и не расходятся, образуя цепочки." },
+                { text: "Какой антиген лежит в основе деления β-гемолитических стрептококков на серогруппы?", options: ["М-белок", "С-полисахарид", "Капсула", "Тейхоевая кислота"], correct: 1, hint: "Групповой антиген", explanation: "С-антиген (полисахарид) клеточной стенки определяет серогруппу по Лэнсфилд." },
+            ]
+        },
+        bordetella: {
+            name: "🟢 Бордетеллы (коклюш)",
+            difficulty: "easy",
+            color: "easy",
+            questionCount: 15,
+            questions: [
+                { text: "Какой метод посева используют для диагностики коклюша прямо у постели больного?", options: ["Метод щелочной пептонной воды", "Метод кашлевых пластинок", "Метод флотации", "Метод обогащения"], correct: 1, hint: "Больной кашляет прямо на чашку", explanation: "Чашку с питательной средой подносят ко рту во время кашля." },
+            ]
+        },
+        meningococcus: {
+            name: "🧠 Менингококки",
+            difficulty: "medium",
+            color: "medium",
+            questionCount: 30,
+            questions: [
+                { text: "Какой материал исследуют для диагностики менингококкового менингита?", options: ["Кровь", "Носоглоточная слизь", "Ликвор", "Мокрота"], correct: 2, hint: "Спинномозговая жидкость", explanation: "При менингите основным материалом является ликвор." },
+                { text: "Какой антиген менингококка определяет серогруппу?", options: ["Капсульный полисахарид", "Белок наружной мембраны", "Липополисахарид", "Пили"], correct: 0, hint: "Капсула", explanation: "По капсульным полисахаридам выделяют серогруппы A, B, C, Y, W135." },
+            ]
+        },
+        pneumococcus: {
+            name: "🫁 Пневмококки",
+            difficulty: "medium",
+            color: "medium",
+            questionCount: 30,
+            questions: [
+                { text: "Форма пневмококка?", options: ["Бобовидная", "Ланцетовидная", "Шаровидная", "Вибрион"], correct: 1, hint: "Похожа на копьё", explanation: "Пневмококки имеют ланцетовидную форму, располагаются попарно." },
+            ]
+        },
+        salmonella: {
+            name: "🥚 Сальмонеллы (тиф, паратиф)",
+            difficulty: "medium",
+            color: "medium",
+            questionCount: 30,
+            questions: [
+                { text: "Какую среду используют для выделения сальмонелл?", options: ["Среда Кесслера", "Висмут-сульфит агар", "Среда Сабуро", "ЖСА"], correct: 1, hint: "Чёрные колонии", explanation: "На висмут-сульфит агаре сальмонеллы образуют чёрные колонии с металлическим блеском." },
+            ]
+        },
+        virology: {
+            name: "🦠 Вирусология",
+            difficulty: "medium",
+            color: "medium",
+            questionCount: 30,
+            questions: [
+                { text: "Какой вирус содержит РНК и обратную транскриптазу?", options: ["Вирус гриппа", "ВИЧ", "Вирус гепатита В", "Вирус герпеса"], correct: 1, hint: "Ретровирус", explanation: "ВИЧ относится к семейству Retroviridae, имеет обратную транскриптазу." },
+            ]
+        },
+        immunology: {
+            name: "🧬 Иммунология / диагностика",
+            difficulty: "medium",
+            color: "medium",
+            questionCount: 30,
+            questions: [
+                { text: "Какие антитела появляются первыми после инфекции?", options: ["IgG", "IgM", "IgA", "IgE"], correct: 1, hint: "Ранний ответ", explanation: "IgM синтезируются первыми, затем сменяются на IgG." },
+            ]
+        },
+        brucella: {
+            name: "🐑 Бруцеллы",
+            difficulty: "medium",
+            color: "medium",
+            questionCount: 30,
+            questions: [
+                { text: "Какой основной путь заражения бруцеллёзом?", options: ["Воздушно-капельный", "Алиментарный (молоко, сыр)", "Трансмиссивный", "Половой"], correct: 1, hint: "Продукты от коз, овец", explanation: "Заражение через сырое молоко и молочные продукты от больных животных." },
+            ]
+        },
+        corynebacterium: {
+            name: "🦠 Коринебактерии (дифтерия)",
+            difficulty: "hard",
+            color: "hard",
+            questionCount: 40,
+            questions: [
+                { text: "Какой метод окраски выявляет зерна волютина у дифтерийной палочки?", options: ["По Граму", "По Цилю-Нильсену", "По Нейссеру", "По Ожешко"], correct: 2, hint: "Окраска на метахроматические гранулы", explanation: "По Нейссеру палочки жёлтые, а зерна волютина тёмно-коричневые." },
+            ]
+        },
+        anaerobes: {
+            name: "⚠️ Анаэробы (ботулизм, столбняк, газовая гангрена)",
+            difficulty: "hard",
+            color: "hard",
+            questionCount: 40,
+            questions: [
+                { text: "Какой токсин продуцирует Clostridium tetani?", options: ["Ботулотоксин", "Тетаноспазмин", "Энтеротоксин", "Холероген"], correct: 1, hint: "Столбняк", explanation: "Тетаноспазмин — нейротоксин, вызывающий спастические параличи." },
+                { text: "Какой возбудитель вызывает ботулизм?", options: ["Clostridium perfringens", "Clostridium botulinum", "Clostridium tetani", "Bacillus anthracis"], correct: 1, hint: "Консервы, колбасы", explanation: "Clostridium botulinum продуцирует ботулотоксин." },
+            ]
+        }
+    };
+
+    // Марафон соберём из всех вопросов при старте
+    function buildMarathonQuestions() {
+        let all = [];
+        for (let key in TOPICS) {
+            all.push(...TOPICS[key].questions);
+        }
+        // перемешиваем
+        for (let i = all.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [all[i], all[j]] = [all[j], all[i]];
+        }
+        return all.slice(0, 100); // ровно 100 вопросов (или меньше, если мало)
+    }
+
+    // Состояние приложения
+    let currentMode = 'menu'; // 'menu', 'test'
+    let currentTopicKey = null;
+    let currentQuestions = [];   // массив вопросов
+    let currentIndex = 0;
+    let userAnswers = [];        // выбранный индекс ответа (-1 если нет)
+    let answerSubmitted = false; // показаны ли пояснения после ответа
+    let currentSelectedOption = -1;
+    let hintVisible = false;
+    let savedState = null;
+
+    // Хранилище localStorage
+    function saveStateToLocal() {
+        const state = {
+            mode: currentMode,
+            topicKey: currentTopicKey,
+            questions: currentQuestions,
+            index: currentIndex,
+            answers: userAnswers,
+            canRestore: true
+        };
+        localStorage.setItem('microbio_test_state', JSON.stringify(state));
+    }
+
+    function loadStateFromLocal() {
+        const raw = localStorage.getItem('microbio_test_state');
+        if (!raw) return false;
+        try {
+            const state = JSON.parse(raw);
+            if (state.canRestore && state.questions && state.questions.length) {
+                currentMode = state.mode;
+                currentTopicKey = state.topicKey;
+                currentQuestions = state.questions;
+                currentIndex = state.index || 0;
+                userAnswers = state.answers || new Array(currentQuestions.length).fill(-1);
+                answerSubmitted = false;
+                currentSelectedOption = -1;
+                hintVisible = false;
+                return true;
+            }
+        } catch(e) {}
+        return false;
+    }
+
+    function startTopic(topicKey, questionsArray) {
+        currentMode = 'test';
+        currentTopicKey = topicKey;
+        currentQuestions = [...questionsArray];
+        // перемешиваем варианты ответов для каждого вопроса при старте (рандом порядок вариантов)
+        for (let q of currentQuestions) {
+            if (q._originalOptions === undefined) {
+                q._originalOptions = [...q.options];
+            }
+            // перемешиваем варианты
+            const opts = [...q._originalOptions];
+            for (let i = opts.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [opts[i], opts[j]] = [opts[j], opts[i]];
+            }
+            q.options = opts;
+            // пересчитываем correct индекс (по тексту)
+            const correctText = q._originalOptions[q.correct];
+            q.correct = q.options.indexOf(correctText);
+        }
+        userAnswers = new Array(currentQuestions.length).fill(-1);
+        currentIndex = 0;
+        answerSubmitted = false;
+        currentSelectedOption = -1;
+        hintVisible = false;
+        saveStateToLocal();
+        render();
+    }
+
+    function finishTest() {
+        const total = currentQuestions.length;
+        let correctCount = 0;
+        for (let i = 0; i < total; i++) {
+            if (userAnswers[i] === currentQuestions[i].correct) correctCount++;
+        }
+        const percent = Math.round((correctCount / total) * 100);
+        let resultsHtml = `<div class="card"><h2>📋 Результаты теста</h2>
+        <div class="score-badge">${percent}% (${correctCount}/${total} правильно)</div>
+        <div class="result-table"><table><thead><tr><th>#</th><th>Вопрос</th><th>Ваш ответ</th><th>Правильный ответ</th><th>Пояснение</th><th>Итог</th></tr></thead><tbody>`;
+        for (let i = 0; i < total; i++) {
+            const q = currentQuestions[i];
+            const userOptIndex = userAnswers[i];
+            const userText = userOptIndex >= 0 ? q.options[userOptIndex] : "Нет ответа";
+            const correctText = q.options[q.correct];
+            const isCorrect = (userOptIndex === q.correct);
+            const rowClass = isCorrect ? "correct-row" : "wrong-row";
+            resultsHtml += `<tr class="${rowClass}">
+                <td>${i+1}</td>
+                <td>${q.text}</td>
+                <td>${userText}</td>
+                <td>${correctText}</td>
+                <td>${q.explanation || "—"}</td>
+                <td>${isCorrect ? "✅" : "❌"}</td>
+            </tr>`;
+        }
+        resultsHtml += `</tbody></table></div><button id="backToMenuBtn">🏠 Главное меню</button></div>`;
+        document.getElementById('app').innerHTML = resultsHtml;
+        document.getElementById('backToMenuBtn')?.addEventListener('click', () => {
+            localStorage.removeItem('microbio_test_state');
+            currentMode = 'menu';
+            render();
+        });
+    }
+
+    function submitAnswer() {
+        if (answerSubmitted) return;
+        if (currentSelectedOption === -1) {
+            alert("Выбери вариант ответа");
+            return;
+        }
+        userAnswers[currentIndex] = currentSelectedOption;
+        answerSubmitted = true;
+        saveStateToLocal();
+        render();
+    }
+
+    function nextQuestion() {
+        if (!answerSubmitted && userAnswers[currentIndex] === -1) {
+            alert("Сначала ответь на вопрос или нажми 'Показать ответ'");
+            return;
+        }
+        if (currentIndex + 1 < currentQuestions.length) {
+            currentIndex++;
+            answerSubmitted = false;
+            currentSelectedOption = (userAnswers[currentIndex] !== -1) ? userAnswers[currentIndex] : -1;
+            hintVisible = false;
+            saveStateToLocal();
+            render();
+        } else {
+            finishTest();
+        }
+    }
+
+    function render() {
+        if (currentMode === 'menu') {
+            renderMenu();
+        } else {
+            renderTest();
+        }
+    }
+
+    function renderMenu() {
+        const topicsArray = Object.keys(TOPICS).map(key => ({ key, ...TOPICS[key] }));
+        let html = `<div class="card"><div class="header"><h1>🧫 МИКРОБИОЛОГИЯ</h1><span style="font-size:14px">🎓 Марафон + темы</span></div>`;
+        html += `<div class="topic-grid">`;
+        for (let t of topicsArray) {
+            html += `<div class="topic-btn" data-key="${t.key}">
+                        <div class="topic-name">${t.name}</div>
+                        <div class="topic-meta"><span class="difficulty ${t.color}">${t.difficulty === 'easy' ? 'Лёгкая' : t.difficulty === 'medium' ? 'Средняя' : 'Сложная'}</span> <span>📋 ${t.questionCount} вопросов</span></div>
+                    </div>`;
+        }
+        html += `<div class="topic-btn marathon" id="marathonBtn">
+                    <div class="topic-name">🏆 МАРАФОН (100 вопросов)</div>
+                    <div class="topic-meta">🔥 Все темы, рандомный порядок</div>
+                </div>`;
+        html += `</div>`;
+        if (savedState) {
+            html += `<button id="restoreBtn">🔄 Продолжить незавершённый тест</button>`;
+        }
+        html += `<footer>⚡ Выбери тему или марафон. Прогресс сохраняется автоматически.</footer></div>`;
+        document.getElementById('app').innerHTML = html;
+        for (let t of topicsArray) {
+            const el = document.querySelector(`.topic-btn[data-key="${t.key}"]`);
+            if (el) el.addEventListener('click', () => startTopic(t.key, TOPICS[t.key].questions));
+        }
+        document.getElementById('marathonBtn')?.addEventListener('click', () => {
+            const marathonQ = buildMarathonQuestions();
+            startTopic('marathon', marathonQ);
+        });
+    }
+
+    function renderTest() {
+        const q = currentQuestions[currentIndex];
+        if (!q) return;
+        const selectedIdx = currentSelectedOption;
+        const isAnswered = answerSubmitted;
+        const userChoice = userAnswers[currentIndex];
+        const isAlreadyCorrect = (userChoice !== -1 && userChoice === q.correct);
+        let optionsHtml = '';
+        q.options.forEach((opt, idx) => {
+            let additionalClass = '';
+            if (isAnswered) {
+                if (idx === q.correct) additionalClass = ' selected';
+                else if (idx === userChoice && userChoice !== q.correct) additionalClass = ' selected';
+                additionalClass += ' disabled';
+            } else if (selectedIdx === idx) additionalClass = ' selected';
+            optionsHtml += `<div class="option${additionalClass}" data-opt="${idx}">${String.fromCharCode(65+idx)}. ${opt}</div>`;
+        });
+        let hintHtml = hintVisible ? `<div class="hint">💡 Подсказка: ${q.hint}</div>` : '';
+        let explanationHtml = '';
+        if (isAnswered && userChoice !== -1) {
+            const isC = (userChoice === q.correct);
+            explanationHtml = `<div class="explanation">📘 Пояснение: ${q.explanation || (isC ? "Верно!" : "Неверно.")}</div>`;
+        }
+        const progressPercent = Math.round(((currentIndex+1)/currentQuestions.length)*100);
+        let navHtml = `<div class="progress">Вопрос ${currentIndex+1} из ${currentQuestions.length} · Прогресс ${progressPercent}%</div>`;
+        navHtml += `<div class="progress-bar" style="background:#e2e8f0; border-radius:20px; height:6px;"><div style="width:${progressPercent}%; background:#3b82f6; height:6px; border-radius:20px;"></div></div>`;
+        let btnHtml = `<div style="margin-top: 18px;">`;
+        if (!isAnswered) {
+            btnHtml += `<button id="submitBtn">✅ Проверить ответ</button>`;
+            btnHtml += `<button id="hintBtn" class="outline">❓ Подсказка</button>`;
+        } else {
+            btnHtml += `<button id="nextBtn" class="secondary">➡️ Следующий вопрос</button>`;
+            btnHtml += `<button id="menuBtn" class="outline">🏠 В меню</button>`;
+        }
+        btnHtml += `</div>`;
+        const fullHtml = `
+        <div class="card">
+            <div class="header"><h2>${currentTopicKey === 'marathon' ? '🏆 МАРАФОН' : TOPICS[currentTopicKey]?.name || 'Тест'}</h2><button id="forceMenuBtn" class="outline" style="background:transparent;">✖ Выйти</button></div>
+            ${navHtml}
+            <div class="question-text">${q.text}</div>
+            ${optionsHtml}
+            ${hintHtml}
+            ${explanationHtml}
+            ${btnHtml}
+        </div>`;
+        document.getElementById('app').innerHTML = fullHtml;
+        if (!isAnswered) {
+            document.querySelectorAll('.option').forEach(el => {
+                el.addEventListener('click', () => {
+                    if (answerSubmitted) return;
+                    const idx = parseInt(el.dataset.opt);
+                    currentSelectedOption = idx;
+                    render();
+                });
+            });
+            document.getElementById('submitBtn')?.addEventListener('click', submitAnswer);
+            document.getElementById('hintBtn')?.addEventListener('click', () => { hintVisible = true; render(); });
+        } else {
+            document.getElementById('nextBtn')?.addEventListener('click', nextQuestion);
+        }
+        document.getElementById('menuBtn')?.addEventListener('click', () => { localStorage.removeItem('microbio_test_state'); currentMode='menu'; render(); });
+        document.getElementById('forceMenuBtn')?.addEventListener('click', () => { localStorage.removeItem('microbio_test_state'); currentMode='menu'; render(); });
+    }
+
+    // инициализация
+    (function init() {
+        const restored = loadStateFromLocal();
+        if (restored && currentQuestions.length > 0 && currentMode === 'test') {
+            savedState = true;
+        } else {
+            savedState = false;
+            currentMode = 'menu';
+        }
+        render();
+    })();
+</script>
+</body>
+</html>
